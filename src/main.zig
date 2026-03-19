@@ -4,8 +4,8 @@ const edda = @import("edda");
 pub fn main() !void {
     var a = [_]f32{ 1.0, 2.0, 3.0, 4.0, 5.0 };
     var b = [_]f32{ 6.0, 7.0, 8.0, 9.0, 10.0 };
-    const similarity = cosineSimilarity(a[0..], b[0..]);
-    std.debug.print("Cosine similarity: {}\n", .{similarity});
+    const result = bruteForceSearch(a[0..], b[0..]);
+    std.debug.print("Cosine similarity: {}, {}\n", .{ result.similarity, result.best_j });
 }
 
 pub fn cosineSimilarity(a: []f32, b: []f32) f32 {
@@ -20,4 +20,19 @@ pub fn cosineSimilarity(a: []f32, b: []f32) f32 {
     }
 
     return dot_product / (@sqrt(norm_a) * @sqrt(norm_b));
+}
+
+fn bruteForceSearch(input: []f32, collection: [][]f32) struct { similarity: f32, best_j: usize } {
+    var max_similarity: f32 = 0.0;
+    var best_j: usize = 0;
+    for (input) |input_val| {
+        for (collection, 0..) |collection_val, j| {
+            const similarity = cosineSimilarity(&[_]f32{input_val}, &[_]f32{collection_val});
+            if (similarity > max_similarity) {
+                max_similarity = similarity;
+                best_j = j;
+            }
+        }
+    }
+    return .{ max_similarity, best_j };
 }
