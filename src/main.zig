@@ -2,26 +2,22 @@ const std = @import("std");
 const edda = @import("edda");
 
 pub fn main() !void {
-    // Prints to stderr, ignoring potential errors.
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-    try edda.bufferedPrint();
+    var a = [_]f32{ 1.0, 2.0, 3.0, 4.0, 5.0 };
+    var b = [_]f32{ 6.0, 7.0, 8.0, 9.0, 10.0 };
+    const similarity = cosineSimilarity(a[0..], b[0..]);
+    std.debug.print("Cosine similarity: {}\n", .{similarity});
 }
 
-test "simple test" {
-    const gpa = std.testing.allocator;
-    var list: std.ArrayList(i32) = .empty;
-    defer list.deinit(gpa); // Try commenting this out and see if zig detects the memory leak!
-    try list.append(gpa, 42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
-}
+pub fn cosineSimilarity(a: []f32, b: []f32) f32 {
+    var dot_product: f32 = 0.0;
+    var norm_a: f32 = 0.0;
+    var norm_b: f32 = 0.0;
 
-test "fuzz example" {
-    const Context = struct {
-        fn testOne(context: @This(), input: []const u8) anyerror!void {
-            _ = context;
-            // Try passing `--fuzz` to `zig build test` and see if it manages to fail this test case!
-            try std.testing.expect(!std.mem.eql(u8, "canyoufindme", input));
-        }
-    };
-    try std.testing.fuzz(Context{}, Context.testOne, .{});
+    for (a, b) |a_val, b_val| {
+        dot_product += a_val * b_val;
+        norm_a += a_val * a_val;
+        norm_b += b_val * b_val;
+    }
+
+    return dot_product / (@sqrt(norm_a) * @sqrt(norm_b));
 }
