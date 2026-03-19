@@ -1,0 +1,7 @@
+[project]
+name = "edda"
+version = "0.1.0"
+description = "Edda - Lightweight Vector Search Engine"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
