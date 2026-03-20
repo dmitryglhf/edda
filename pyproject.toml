@@ -14,8 +14,8 @@ authors = [
 ]
 dependencies = []
 
-[project.optional-dependencies]
-dev = ["ruff"]
+[dependency-groups]
+dev = ["ruff", "ty", "prek"]
 
 [tool.uv.build-backend]
 packages = [{ include = "edda", from = "python" }]
