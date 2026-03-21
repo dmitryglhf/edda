@@ -1,3 +1,6 @@
+build:
+    zig build -Doptimize=ReleaseFast
+
 venv-dev:
     uv sync --group dev
     uv run prek install
