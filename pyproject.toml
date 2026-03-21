@@ -16,6 +16,13 @@ dependencies = []
 
 [dependency-groups]
 dev = ["ruff", "ty", "prek"]
+examples = ["pydantic-ai", "numpy"]
+
+[tool.uv.workspace]
+members = ["edda-mcp"]
+
+[tool.uv.sources]
+edda-mcp = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["python/edda"]

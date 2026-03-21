@@ -1,5 +1,6 @@
 build:
     zig build -Doptimize=ReleaseFast
+    cp zig-out/lib/libedda.dylib python/edda/_edda.dylib
 
 venv-dev:
     uv sync --group dev
