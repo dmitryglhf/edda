@@ -17,8 +17,8 @@ pub const IndexFlat = struct {
             .allocator = allocator,
             .dim = dim,
             .metric = metric,
-            .vectors = std.ArrayList(f32).init(allocator),
-            .ids = std.ArrayList(u64).init(allocator),
+            .vectors = .{},
+            .ids = .{},
             .count = 0,
         };
     }
@@ -63,10 +63,58 @@ pub const IndexFlat = struct {
 
         return top_k;
     }
+
+    pub fn save(self: *const IndexFlat, path: []const u8) !void {
+        const file = try std.fs.cwd().createFile(path, .{});
+        defer file.close();
+
+        var buf: [4096]u8 = undefined;
+        var writer = file.writer(&buf);
+
+        try writer.interface.writeAll(std.mem.asBytes(&self.dim));
+        try writer.interface.writeAll(std.mem.asBytes(&self.metric));
+        try writer.interface.writeAll(std.mem.asBytes(&self.count));
+        try writer.interface.writeAll(std.mem.sliceAsBytes(self.ids.items[0..self.count]));
+        try writer.interface.writeAll(std.mem.sliceAsBytes(self.vectors.items[0 .. self.count * self.dim]));
+
+        try writer.interface.flush();
+    }
+
+    pub fn load(allocator: Allocator, path: []const u8) !IndexFlat {
+        const file = try std.fs.cwd().openFile(path, .{});
+        defer file.close();
+
+        var buf: [4096]u8 = undefined;
+        var reader = file.reader(&buf);
+
+        var dim: u32 = undefined;
+        try reader.interface.readSliceAll(std.mem.asBytes(&dim));
+
+        var metric: types.Metric = undefined;
+        try reader.interface.readSliceAll(std.mem.asBytes(&metric));
+
+        var count: u32 = undefined;
+        try reader.interface.readSliceAll(std.mem.asBytes(&count));
+
+        const ids = try allocator.alloc(u64, count);
+        defer allocator.free(ids);
+        try reader.interface.readSliceAll(std.mem.sliceAsBytes(ids));
+
+        const vectors = try allocator.alloc(f32, count * dim);
+        defer allocator.free(vectors);
+        try reader.interface.readSliceAll(std.mem.sliceAsBytes(vectors));
+
+        var index = IndexFlat.init(allocator, dim, metric);
+        index.count = count;
+        try index.ids.appendSlice(allocator, ids);
+        try index.vectors.appendSlice(allocator, vectors);
+
+        return index;
+    }
 };
 
 test "add and search" {
-    var index = IndexFlat(std.testing.allocator, 3, .cosine);
+    var index = IndexFlat.init(std.testing.allocator, 3, .cosine);
     defer index.deinit();
 
     try index.add(
@@ -79,4 +127,23 @@ test "add and search" {
     defer std.testing.allocator.free(results);
 
     try std.testing.expect(results.len == 2);
+}
+
+test "save and load" {
+    var index = IndexFlat.init(std.testing.allocator, 3, .cosine);
+    defer index.deinit();
+
+    try index.add(
+        &[_]u64{ 0, 1, 2 },
+        &[_]f32{ 0.1, 0.2, 0.3, 0.9, 0.1, 0.0, 0.1, 0.3, 0.28 },
+    );
+
+    try index.save("test_idx.edda");
+    var i_loaded = try IndexFlat.load(std.testing.allocator, "test_idx.edda");
+    defer i_loaded.deinit();
+
+    try std.testing.expectEqual(@as(u32, 3), i_loaded.dim);
+    try std.testing.expectEqual(@as(u32, 3), i_loaded.count);
+
+    defer std.fs.cwd().deleteFile("test_idx.edda") catch {};
 }
