@@ -22,9 +22,9 @@ pip install edda
 ```
 
 ```python
-from edda import Index
+from edda import IndexFlat
 
-index = Index(dim=3, metric="cosine")
+index = IndexFlat(dim=3, metric="cosine")
 
 index.add(
     ids=[0, 1, 2],
