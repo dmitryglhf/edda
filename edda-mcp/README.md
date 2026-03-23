@@ -1,6 +1,6 @@
 # edda-mcp
 
-MCP server for [Edda](https://github.com/YOUR_USERNAME/edda) vector search engine. Agents work with text — embedding happens under the hood via any OpenAI-compatible API.
+MCP server for [Edda](https://github.com/dmitryglhf/edda) vector search engine.
 
 ## Usage
 
