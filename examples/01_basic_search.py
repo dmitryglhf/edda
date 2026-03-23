@@ -1,9 +1,7 @@
-from edda import Index
+from edda import IndexFlat
 
-# Create an in-memory index for 3-dimensional vectors
-index = Index(dim=3, metric="cosine")
+index = IndexFlat(dim=3, metric="cosine")
 
-# Add vectors with IDs
 index.add(
     ids=[0, 1, 2],
     vectors=[
@@ -13,7 +11,6 @@ index.add(
     ],
 )
 
-# Search: find 2 most similar vectors to query
 results = index.search(query=[0.1, 0.2, 0.3], k=2)
 
 for result in results:
