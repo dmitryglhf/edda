@@ -40,3 +40,7 @@ class CustomBuildHook(BuildHookInterface):
 
         # 4. Tell hatchling to include the artifact
         build_data.setdefault("force_include", {})[str(dst)] = f"edda/_edda{src.suffix}"
+
+        # 5. Mark wheel as platform-specific
+        build_data["pure_python"] = False
+        build_data["infer_tag"] = True
