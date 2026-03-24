@@ -17,6 +17,8 @@ You may find Edda useful for semantic search, RAG, matching, and recommendation 
 
 ## Quickstart
 
+Soon..
+
 ```bash
 pip install edda
 ```
