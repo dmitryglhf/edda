@@ -1,6 +1,6 @@
 import os
 
-from edda import Index
+from edda import IndexFlat
 from fastmcp import FastMCP
 from openai import OpenAI
 
@@ -26,9 +26,9 @@ _probe = _embed(["probe"])
 _dim = len(_probe[0])
 
 try:
-    _index = Index.load(_index_path)
+    _index = IndexFlat.load(_index_path)
 except FileNotFoundError:
-    _index = Index(dim=_dim, metric=_metric)
+    _index = IndexFlat(dim=_dim, metric=_metric)
 
 mcp = FastMCP("edda")
 
