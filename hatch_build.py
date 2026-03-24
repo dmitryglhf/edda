@@ -7,10 +7,10 @@ from pathlib import Path
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
 # Map (os, machine) to Zig library filename produced by `zig build`.
-_LIB_NAMES = {
-    "Darwin": "libedda.dylib",
-    "Linux": "libedda.so",
-    "Windows": "edda.dll",
+_LIB_INFO = {
+    "Darwin": ("lib", "libedda.dylib"),
+    "Linux": ("lib", "libedda.so"),
+    "Windows": ("bin", "edda.dll"),
 }
 
 
@@ -26,11 +26,12 @@ class CustomBuildHook(BuildHookInterface):
         )
 
         # 2. Find the compiled artifact
-        lib_name = _LIB_NAMES.get(platform.system())
-        if lib_name is None:
+        lib_info = _LIB_INFO.get(platform.system())
+        if lib_info is None:
             sys.exit(f"Unsupported platform: {platform.system()}")
 
-        src = root / "zig-out" / "lib" / lib_name
+        subdir, lib_name = lib_info
+        src = root / "zig-out" / subdir / lib_name
         if not src.exists():
             sys.exit(f"Build artifact not found: {src}")
 
