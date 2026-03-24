@@ -22,7 +22,7 @@ dependencies = [
 edda-mcp = "edda_mcp:main"
 
 [tool.uv.sources]
-edda = { workspace = true }
+eddadb = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/edda_mcp"]
