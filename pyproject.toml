@@ -15,7 +15,7 @@ authors = [
 dependencies = ["numpy"]
 
 [dependency-groups]
-dev = ["ruff", "ty", "prek"]
+dev = ["ruff", "ty", "prek", "pytest"]
 examples = ["pydantic-ai"]
 
 [tool.uv.workspace]
