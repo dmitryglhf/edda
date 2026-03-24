@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "edda"
-version = "0.0.0"
+version = "0.1.0"
 description = "Edda the Lightweight Vector Search Engine"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -12,11 +12,11 @@ license = { file = "LICENSE" }
 authors = [
   { name = "Dmitrii Gilemkhanov", email = "dima.rize@yandex.ru" },
 ]
-dependencies = []
+dependencies = ["numpy"]
 
 [dependency-groups]
 dev = ["ruff", "ty", "prek"]
-examples = ["pydantic-ai", "numpy"]
+examples = ["pydantic-ai"]
 
 [tool.uv.workspace]
 members = ["edda-mcp"]

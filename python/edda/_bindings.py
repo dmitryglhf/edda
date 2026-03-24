@@ -1,9 +1,7 @@
 import ctypes
 import sys
 from pathlib import Path
-from typing import Sequence
 
-# Find the compiled library next to this file.
 _pkg_dir = Path(__file__).parent
 _suffixes = {
     "darwin": ".dylib",
@@ -24,53 +22,42 @@ if not _lib_path.exists():
 
 _lib = ctypes.CDLL(str(_lib_path))
 
+# edda_index_create(dim: u32, metric: u8) -> *IndexFlat | null
+_lib.edda_index_create.argtypes = [ctypes.c_uint32, ctypes.c_uint8]
+_lib.edda_index_create.restype = ctypes.c_void_p
 
-class BruteForceResult(ctypes.Structure):
-    _fields_ = [("similarity", ctypes.c_float), ("best_j", ctypes.c_size_t)]
+# edda_index_destroy(handle: *IndexFlat) -> void
+_lib.edda_index_destroy.argtypes = [ctypes.c_void_p]
+_lib.edda_index_destroy.restype = None
 
-
-_lib.edda_cosine_similarity.argtypes = [
+# edda_index_add(handle, ids_ptr, vectors_ptr, count) -> i32
+_lib.edda_index_add.argtypes = [
+    ctypes.c_void_p,
+    ctypes.POINTER(ctypes.c_uint64),
     ctypes.POINTER(ctypes.c_float),
-    ctypes.c_size_t,
-    ctypes.POINTER(ctypes.c_float),
-    ctypes.c_size_t,
+    ctypes.c_uint32,
 ]
-_lib.edda_cosine_similarity.restype = ctypes.c_float
+_lib.edda_index_add.restype = ctypes.c_int32
 
-_lib.edda_brute_force_search.argtypes = [
+# edda_index_search(handle, query_ptr, query_len, k, out_ids, out_scores) -> i32
+_lib.edda_index_search.argtypes = [
+    ctypes.c_void_p,
     ctypes.POINTER(ctypes.c_float),
-    ctypes.c_size_t,
+    ctypes.c_uint32,
+    ctypes.c_uint32,
+    ctypes.POINTER(ctypes.c_uint64),
     ctypes.POINTER(ctypes.c_float),
-    ctypes.c_size_t,
 ]
-_lib.edda_brute_force_search.restype = BruteForceResult
+_lib.edda_index_search.restype = ctypes.c_int32
 
+# edda_index_save(handle, path_ptr, path_len) -> i32
+_lib.edda_index_save.argtypes = [
+    ctypes.c_void_p,
+    ctypes.c_char_p,
+    ctypes.c_uint32,
+]
+_lib.edda_index_save.restype = ctypes.c_int32
 
-def _as_c_array(data: Sequence[float]) -> tuple[ctypes.Array, int]:
-    arr = (ctypes.c_float * len(data))(*data)
-    return arr, len(data)
-
-
-def cosine_similarity(a: Sequence[float], b: Sequence[float]) -> float:
-    a_arr, a_len = _as_c_array(a)
-    b_arr, b_len = _as_c_array(b)
-    return _lib.edda_cosine_similarity(a_arr, a_len, b_arr, b_len)
-
-
-def brute_force_search(
-    a: Sequence[float], collection: Sequence[Sequence[float]]
-) -> tuple[float, int]:
-    if not collection or not collection[0]:
-        raise ValueError("collection must be non-empty")
-    dim = len(collection[0])
-    if len(a) != dim:
-        raise ValueError(f"query dimension {len(a)} != collection dimension {dim}")
-    if any(len(row) != dim for row in collection):
-        raise ValueError("all vectors must have the same dimension")
-
-    a_arr, a_len = _as_c_array(a)
-    flat_b = [x for row in collection for x in row]
-    b_arr, _ = _as_c_array(flat_b)
-
-    res = _lib.edda_brute_force_search(a_arr, a_len, b_arr, len(collection))
-    return float(res.similarity), int(res.best_j)
+# edda_index_load(path_ptr, path_len) -> *IndexFlat | null
+_lib.edda_index_load.argtypes = [ctypes.c_char_p, ctypes.c_uint32]
+_lib.edda_index_load.restype = ctypes.c_void_p
