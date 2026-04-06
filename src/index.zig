@@ -6,13 +6,13 @@ const types = @import("types.zig");
 pub const IndexFlat = struct {
     allocator: Allocator,
     dim: u32,
-    metric: types.Metric,
+    metric: metrics.Metric,
 
     vectors: std.ArrayList(f32),
     ids: std.ArrayList(u64),
     count: u32,
 
-    pub fn init(allocator: Allocator, dim: u32, metric: types.Metric) IndexFlat {
+    pub fn init(allocator: Allocator, dim: u32, metric: metrics.Metric) IndexFlat {
         return .{
             .allocator = allocator,
             .dim = dim,
@@ -90,7 +90,7 @@ pub const IndexFlat = struct {
         var dim: u32 = undefined;
         try reader.interface.readSliceAll(std.mem.asBytes(&dim));
 
-        var metric: types.Metric = undefined;
+        var metric: metrics.Metric = undefined;
         try reader.interface.readSliceAll(std.mem.asBytes(&metric));
 
         var count: u32 = undefined;

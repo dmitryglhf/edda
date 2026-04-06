@@ -1,6 +1,11 @@
+root := justfile_directory()
+lib_ext := if os() == "macos" { "dylib" } else if os() == "linux" { "so" } else { error("unsupported OS") }
+lib_name := "libedda." + lib_ext
+py_name := "_edda." + lib_ext
+
 build:
     zig build -Doptimize=ReleaseFast
-    cp zig-out/lib/libedda.dylib python/edda/_edda.dylib
+    cp {{ root }}/zig-out/lib/{{ lib_name }} {{ root }}/python/edda/{{ py_name }}
 
 venv-dev:
     uv sync --group dev

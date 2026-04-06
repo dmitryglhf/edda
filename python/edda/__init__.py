@@ -6,7 +6,7 @@ import numpy.typing as npt
 
 from . import _bindings as _lib
 
-_METRICS = {"cosine": 0}
+_METRICS = {"cosine": 0, "dot": 1, "euclid": 2, "manhattan": 3}
 
 VectorLike = Union[Sequence[Sequence[float]], npt.NDArray]
 QueryLike = Union[Sequence[float], npt.NDArray]
