@@ -51,6 +51,11 @@ just build
 uv pip install -e .
 ```
 
+## Roadmap
+
+- Benchmarking
+- HNSW
+
 ## License
 
 [MIT](LICENSE)
