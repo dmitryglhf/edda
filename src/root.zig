@@ -1,5 +1,5 @@
 const std = @import("std");
-const index = @import("index.zig");
+const index = @import("flat.zig");
 const metrics = @import("metrics.zig");
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
