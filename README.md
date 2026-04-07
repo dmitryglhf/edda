@@ -17,8 +17,6 @@ Edda is a lightweight embedded vector search engine written in Zig with Python b
 
 Named after the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
 
-Source code and issue tracker on [GitHub](https://github.com/dmitryglhf/edda).
-
 ## Installation
 ```bash
 pip install pyedda
