@@ -3,7 +3,7 @@ build-backend = "hatchling.build"
 requires = [ "hatchling" ]
 
 [project]
-name = "eddadb"
+name = "pyedda"
 version = "0.1.1"
 description = "Edda - a lightweight vector search engine"
 readme = "README.md"

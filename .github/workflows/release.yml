@@ -19,8 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # On Linux cibuildwheel runs inside a manylinux container, so Zig is
-      # installed separately via CIBW_BEFORE_ALL_LINUX below.
       - uses: mlugg/setup-zig@v2
         if: runner.os != 'Linux'
         with:
@@ -30,17 +28,11 @@ jobs:
         env:
           CIBW_BUILD: "cp310-* cp311-* cp312-* cp313-*"
           CIBW_SKIP: "*-musllinux_* *-win32 *-manylinux_i686"
-
-          # Install Zig inside the manylinux container.
-          # ARCH is detected at runtime so this works for both x86_64 and aarch64.
           CIBW_BEFORE_ALL_LINUX: |
             ARCH=$(uname -m)
             curl -L https://ziglang.org/download/${{ env.ZIG_VERSION }}/zig-${ARCH}-linux-${{ env.ZIG_VERSION }}.tar.xz | tar -xJ -C /usr/local
             ln -sf /usr/local/zig-${ARCH}-linux-${{ env.ZIG_VERSION }}/zig /usr/local/bin/zig
-
           CIBW_ENVIRONMENT_LINUX: "PATH=/usr/local/bin:$PATH"
-
-          # Smoke test every built wheel in an isolated environment.
           CIBW_TEST_REQUIRES: "numpy pytest"
           CIBW_TEST_COMMAND: "pytest {project}/python/tests -v"
 
@@ -61,14 +53,40 @@ jobs:
           name: sdist
           path: dist/*.tar.gz
 
-  publish:
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: [build-wheels, build-sdist]
+    runs-on: ubuntu-latest
+    # Run on manual dispatch or on tags ending with -test (e.g. v0.2.0-test).
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && endsWith(github.ref, '-test'))
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/pyedda
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
     name: Publish to PyPI
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # Real PyPI only on real tags — not workflow_dispatch, not -test tags.
+    if: >
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/v') &&
+      !endsWith(github.ref, '-test')
     environment:
       name: pypi
-      url: https://pypi.org/p/eddadb
+      url: https://pypi.org/p/pyedda
     permissions:
       id-token: write
     steps:

@@ -19,7 +19,7 @@ Named afther the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
 ## Quickstart
 
 ```bash
-pip install eddadb
+pip install pyedda
 ```
 
 ```python
