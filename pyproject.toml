@@ -35,11 +35,6 @@ dev = [
   "ruff>=0.15.9",
   "ty>=0.0.29",
 ]
-bench = [
-  "chromadb",
-  "tabulate",
-]
-examples = [ "pydantic-ai" ]
 
 [tool.hatch]
 build.targets.wheel.packages = [ "python/edda" ]
