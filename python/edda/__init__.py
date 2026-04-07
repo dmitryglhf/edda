@@ -3,5 +3,5 @@
 from ._common import SearchResult
 from .flat import IndexFlat
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = ["IndexFlat", "SearchResult", "__version__"]
