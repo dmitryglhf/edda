@@ -16,9 +16,6 @@ upd-hooks:
     prek uninstall
     prek install
 
-bench *ARGS:
-    uv run --group bench python benchmarks/bench_vs_chroma.py {{ ARGS }}
-
 lint:
     uv run ruff check . --fix
     uv run ruff format .

@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab.svg)](https://python.org)
-[![Zig 0.15+](https://img.shields.io/badge/zig-0.15+-f7a41d.svg)](https://ziglang.org)
+[![Zig 0.15.2](https://img.shields.io/badge/zig-0.15.2-f7a41d.svg)](https://ziglang.org)
 
 </div>
 
@@ -41,7 +41,7 @@ print(len(loaded))
 
 ## Development
 
-Requires [Zig 0.15+](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), [just](https://github.com/casey/just).
+Requires [Zig 0.15.2](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), [just](https://github.com/casey/just).
 
 ```bash
 git clone https://github.com/dmitryglhf/edda.git
