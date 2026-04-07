@@ -10,51 +10,77 @@
 
 </div>
 
-> Early development. API will change.
+> [!WARNING]
+> Edda is in early development (v0.1). The API will change between versions.
 
-Edda is a lightweight vector similarity search engine. It provides a simple API to store, index, and search vectors with a Python interface and a Zig core for performance. You may find Edda useful for semantic search, RAG, matching, and recommendation systems.
+Edda is a lightweight embedded vector search engine written in Zig with Python bindings. Unlike server-based vector databases (Qdrant, Weaviate, Milvus), Edda runs in-process. No daemon, no network, no infrastructure. Unlike pure-C++ libraries (FAISS, hnswlib), it ships with a clean Python API and zero compile-time dependencies for end users. Useful for prototyping RAG pipelines, embedding small-to-medium collections in applications, or learning how vector search works under the hood.
 
-Named afther the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
+Named after the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
 
-## Quickstart
-
+## Installation
 ```bash
 pip install pyedda
 ```
 
+**Supported platforms** (prebuilt wheels):
+- Linux x86_64
+- macOS arm64 (Apple Silicon)
+- Windows x86_64
+
+On other platforms `pip install` will build from source, which requires [Zig 0.15.2+](https://ziglang.org/download/) to be installed.
+
+## Quickstart
 ```python
 import numpy as np
 from edda import IndexFlat
 
+# In a real pipeline these vectors come from an embedding model
+# (OpenAI, sentence-transformers, BGE, etc.)
+vectors = np.array([
+    [0.1, 0.2, 0.3],
+    [0.9, 0.1, 0.0],
+    [0.1, 0.3, 0.28],
+], dtype=np.float32)
+
 idx = IndexFlat(dim=3, metric="cosine")
-idx.add(np.array([[0.1, 0.2, 0.3], [0.9, 0.1, 0.0], [0.1, 0.3, 0.28]], dtype=np.float32))
+idx.add(vectors, ids=np.array([10, 20, 30], dtype=np.int64))
 print(len(idx))  # 3
 
-result = idx.search(np.array([[0.1, 0.2, 0.3]], dtype=np.float32), k=2)
-print(result.ids)
-print(result.scores)
+query = np.array([[0.1, 0.2, 0.3]], dtype=np.float32)
+result = idx.search(query, k=2)
+print("Top ids:", result.ids[0])
+print("Scores:", result.scores[0])
 
-idx.save("test.edda")
-loaded = IndexFlat.load("test.edda")
-print(len(loaded))
+# Persistence
+idx.save("my_index.edda")
+loaded = IndexFlat.load("my_index.edda")
+print(len(loaded))  # 3
 ```
 
-## Development
-
-Requires [Zig 0.15.2](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), [just](https://github.com/casey/just).
-
-```bash
-git clone https://github.com/dmitryglhf/edda.git
-cd edda
-just build
-uv pip install -e .
-```
+See [`examples/`](./examples/) for more usage scenarios.
 
 ## Roadmap
 
-- HNSW
-- Benchmarking
-- MCP-Server (when stable API)
+- **v0.1 (current)** brute-force flat index, persistence, Python bindings, save/load.
+- **v0.2** HNSW index for sub-linear search, benchmarks against hnswlib and FAISS on standard ANN datasets.
+- **v0.3** filtered search with metadata, batch deletions.
+- **Later** MCP server (rebuild after API stabilizes), additional distance metrics, multi-threading.
+
+## Development
+
+Requires [Zig 0.15.2+](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), and [just](https://github.com/casey/just).
+```bash
+git clone https://github.com/dmitryglhf/edda.git
+cd edda
+
+just build              # compiles the Zig core and copies the native library into the Python package
+uv pip install -e .     # installs pyedda in editable mode
+
+uv run pytest           # Python tests
+zig build test          # Zig unit tests
+```
+
+After modifying Zig code, run `just build` again to rebuild the native library.
 
 ## License
 
