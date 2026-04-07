@@ -57,7 +57,7 @@ loaded = IndexFlat.load("my_index.edda")
 print(len(loaded))  # 3
 ```
 
-See [`examples/`](./examples/) for more usage scenarios.
+See [`examples/`](https://github.com/dmitryglhf/edda/tree/main/examples) for more usage scenarios.
 
 ## Roadmap
 
