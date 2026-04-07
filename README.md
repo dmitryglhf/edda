@@ -14,6 +14,7 @@
 
 Edda is a lightweight vector similarity search engine. It provides a simple API to store, index, and search vectors with a Python interface and a Zig core for performance.
 You may find Edda useful for semantic search, RAG, matching, and recommendation systems. It also ships as an [MCP server](./edda-mcp/) so AI agents can use it as a tool out of the box.
+Named afther the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
 
 ## Quickstart
 
@@ -22,22 +23,20 @@ pip install eddadb
 ```
 
 ```python
+import numpy as np
 from edda import IndexFlat
 
-index = IndexFlat(dim=3, metric="cosine")
+idx = IndexFlat(dim=3, metric="cosine")
+idx.add(np.array([[0.1, 0.2, 0.3], [0.9, 0.1, 0.0], [0.1, 0.3, 0.28]], dtype=np.float32))
+print(len(idx))  # 3
 
-index.add(
-    ids=[0, 1, 2],
-    vectors=[
-        [0.1, 0.2, 0.3],
-        [0.9, 0.1, 0.0],
-        [0.1, 0.3, 0.28],
-    ],
-)
+result = idx.search(np.array([[0.1, 0.2, 0.3]], dtype=np.float32), k=2)
+print(result.ids)
+print(result.scores)
 
-results = index.search(query=[0.1, 0.2, 0.3], k=2)
-for r in results:
-    print(f"id={r.id}, score={r.score:.4f}")
+idx.save("test.edda")
+loaded = IndexFlat.load("test.edda")
+print(len(loaded))
 ```
 
 ## Development
