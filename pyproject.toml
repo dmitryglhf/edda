@@ -40,9 +40,5 @@ examples = [ "pydantic-ai" ]
 build.targets.wheel.packages = [ "python/edda" ]
 build.targets.wheel.hooks.custom.path = "hatch_build.py"
 
-[tool.uv]
-sources.edda-mcp = { workspace = true }
-workspace.members = [ "edda-mcp" ]
-
 [tool.pytest]
 ini_options.testpaths = [ "python/tests" ]
