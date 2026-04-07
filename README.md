@@ -69,18 +69,45 @@ See [`examples/`](https://github.com/dmitryglhf/edda/tree/main/examples) for mor
 ## Development
 
 Requires [Zig 0.15.2+](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), and [just](https://github.com/casey/just).
+
+### Setup
 ```bash
 git clone https://github.com/dmitryglhf/edda.git
 cd edda
-
-just build              # compiles the Zig core and copies the native library into the Python package
+just build              # compiles the Zig core into the Python package
 uv pip install -e .     # installs pyedda in editable mode
-
-uv run pytest           # Python tests
-zig build test          # Zig unit tests
 ```
 
 After modifying Zig code, run `just build` again to rebuild the native library.
+
+### Testing
+```bash
+just test               # runs both Zig unit tests and Python tests
+```
+
+Or run them separately:
+```bash
+zig build test          # Zig unit tests only
+uv run pytest           # Python tests only
+```
+
+### Releasing
+
+Releases are automated via GitHub Actions. Two flows are available:
+
+**Dev release to TestPyPI** for iterating on a version before the final release:
+```bash
+just bump-dev 0.1.3 1   # creates version 0.1.3.dev1
+just release            # pushes commit and tag, triggers TestPyPI workflow
+just test-install 0.1.3.dev1   # installs from TestPyPI in a fresh venv and smoke-tests
+```
+
+**Production release to PyPI** for the final stable version:
+```bash
+just bump 0.1.3         # creates version 0.1.3
+just release            # pushes commit and tag, triggers PyPI workflow
+just test-install-prod 0.1.3
+```
 
 ## License
 

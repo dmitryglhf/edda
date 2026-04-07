@@ -59,10 +59,10 @@ jobs:
     name: Publish to TestPyPI
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
-    # Run on manual dispatch or on tags ending with -test (e.g. v0.2.0-test).
+    # Run on manual dispatch (any branch) or on dev-version tags like v0.1.3.dev1.
     if: >
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && endsWith(github.ref, '-test'))
+      (github.event_name == 'push' && contains(github.ref, '.dev'))
     environment:
       name: testpypi
       url: https://test.pypi.org/p/pyedda
@@ -81,11 +81,11 @@ jobs:
     name: Publish to PyPI
     needs: [build-wheels, build-sdist]
     runs-on: ubuntu-latest
-    # Real PyPI only on real tags — not workflow_dispatch, not -test tags.
+    # Real PyPI only on clean version tags like v0.1.2 — not on dev tags, not on workflow_dispatch.
     if: >
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v') &&
-      !endsWith(github.ref, '-test')
+      !contains(github.ref, '.dev')
     environment:
       name: pypi
       url: https://pypi.org/p/pyedda
