@@ -20,7 +20,12 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
-dependencies = [ "numpy" ]
+urls.Changelog = "https://github.com/dmitryglhf/edda/releases"
+urls.dependencies = [ "numpy" ]
+urls.Documentation = "https://github.com/dmitryglhf/edda#readme"
+urls.Homepage = "https://github.com/dmitryglhf/edda"
+urls.Issues = "https://github.com/dmitryglhf/edda/issues"
+urls.Repository = "https://github.com/dmitryglhf/edda"
 
 [dependency-groups]
 dev = [
