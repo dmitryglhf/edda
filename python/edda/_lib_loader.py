@@ -1,5 +1,3 @@
-"""Locate and load the native edda shared library."""
-
 from __future__ import annotations
 
 import ctypes

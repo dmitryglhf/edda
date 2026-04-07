@@ -1,5 +1,3 @@
-"""Brute-force flat index."""
-
 from __future__ import annotations
 
 import ctypes

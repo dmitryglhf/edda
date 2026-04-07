@@ -1,5 +1,3 @@
-"""ctypes signatures for the edda C API."""
-
 import ctypes
 
 from ._lib_loader import _lib
