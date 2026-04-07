@@ -12,8 +12,8 @@
 
 > Early development. API will change.
 
-Edda is a lightweight vector similarity search engine. It provides a simple API to store, index, and search vectors with a Python interface and a Zig core for performance.
-You may find Edda useful for semantic search, RAG, matching, and recommendation systems. It also ships as an [MCP server](./edda-mcp/) so AI agents can use it as a tool out of the box.
+Edda is a lightweight vector similarity search engine. It provides a simple API to store, index, and search vectors with a Python interface and a Zig core for performance. You may find Edda useful for semantic search, RAG, matching, and recommendation systems. It also ships as an [MCP server](./edda-mcp/) so AI agents can use it as a tool out of the box.
+
 Named afther the [Poetic Edda](https://en.wikipedia.org/wiki/Poetic_Edda).
 
 ## Quickstart
