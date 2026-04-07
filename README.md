@@ -52,8 +52,9 @@ uv pip install -e .
 
 ## Roadmap
 
-- Benchmarking
 - HNSW
+- Benchmarking
+- MCP-Server (when stable API)
 
 ## License
 
