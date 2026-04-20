@@ -2,8 +2,8 @@ const std = @import("std");
 const index = @import("flat.zig");
 const metrics = @import("metrics.zig");
 
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = gpa.allocator();
+const allocator = std.heap.c_allocator;
+const io = std.Io.Threaded.global_single_threaded.io();
 
 export fn edda_index_create(dim: u32, metric: u32) ?*index.IndexFlat {
     const m: metrics.Metric = @enumFromInt(metric);
@@ -91,7 +91,7 @@ export fn edda_index_save(
     path_len: usize,
 ) i32 {
     const path = path_ptr[0..path_len];
-    idx.save(path) catch return -1;
+    idx.save(io, std.Io.Dir.cwd(), path) catch return -1;
     return 0;
 }
 
@@ -105,7 +105,7 @@ export fn edda_index_load(
 ) ?*index.IndexFlat {
     const path = path_ptr[0..path_len];
     const idx = allocator.create(index.IndexFlat) catch return null;
-    idx.* = index.IndexFlat.load(allocator, path) catch {
+    idx.* = index.IndexFlat.load(allocator, io, std.Io.Dir.cwd(), path) catch {
         allocator.destroy(idx);
         return null;
     };

@@ -16,8 +16,8 @@ pub const IndexFlat = struct {
             .allocator = allocator,
             .dim = dim,
             .metric = metric,
-            .vectors = .{},
-            .ids = .{},
+            .vectors = .empty,
+            .ids = .empty,
         };
     }
 
@@ -65,12 +65,12 @@ pub const IndexFlat = struct {
         return top_k;
     }
 
-    pub fn save(self: *const IndexFlat, path: []const u8) !void {
-        const file = try std.fs.cwd().createFile(path, .{});
-        defer file.close();
+    pub fn save(self: *const IndexFlat, io: std.Io, dir: std.Io.Dir, sub_path: []const u8) !void {
+        const file = try dir.createFile(io, sub_path, .{});
+        defer file.close(io);
 
         var buf: [4096]u8 = undefined;
-        var writer = file.writer(&buf);
+        var writer = file.writer(io, &buf);
 
         try writer.interface.writeAll(types.MAGIC);
         try writer.interface.writeAll(std.mem.asBytes(&types.FORMAT_VERSION));
@@ -89,12 +89,12 @@ pub const IndexFlat = struct {
         try writer.interface.flush();
     }
 
-    pub fn load(allocator: Allocator, path: []const u8) !IndexFlat {
-        const file = try std.fs.cwd().openFile(path, .{});
-        defer file.close();
+    pub fn load(allocator: Allocator, io: std.Io, dir: std.Io.Dir, sub_path: []const u8) !IndexFlat {
+        const file = try dir.openFile(io, sub_path, .{});
+        defer file.close(io);
 
         var buf: [4096]u8 = undefined;
-        var reader = file.reader(&buf);
+        var reader = file.reader(io, &buf);
 
         var magic: [4]u8 = undefined;
         try reader.interface.readSliceAll(&magic);
@@ -152,17 +152,12 @@ test "save and load" {
         &[_]f32{ 0.1, 0.2, 0.3, 0.9, 0.1, 0.0, 0.1, 0.3, 0.28 },
     );
 
-    // Creating temp dir for testing
     var tmp = std.testing.tmpDir(.{});
     defer tmp.cleanup();
 
-    const path = try tmp.dir.realpathAlloc(std.testing.allocator, ".");
-    defer std.testing.allocator.free(path);
-    const full_path = try std.fs.path.join(std.testing.allocator, &.{ path, "test.edda" });
-    defer std.testing.allocator.free(full_path);
-
-    try index.save(full_path);
-    var i_loaded = try IndexFlat.load(std.testing.allocator, full_path);
+    const io = std.testing.io;
+    try index.save(io, tmp.dir, "test.edda");
+    var i_loaded = try IndexFlat.load(std.testing.allocator, io, tmp.dir, "test.edda");
     defer i_loaded.deinit();
 
     // Asserts

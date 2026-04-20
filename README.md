@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab.svg)](https://python.org)
-[![Zig 0.15.2](https://img.shields.io/badge/zig-0.15.2-f7a41d.svg)](https://ziglang.org)
+[![Zig 0.16.0](https://img.shields.io/badge/zig-0.16.0-f7a41d.svg)](https://ziglang.org)
 [![CI](https://github.com/dmitryglhf/edda/actions/workflows/ci.yml/badge.svg)](https://github.com/dmitryglhf/edda/actions/workflows/ci.yml)
 
 </div>
