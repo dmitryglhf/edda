@@ -28,7 +28,7 @@ pip install pyedda
 - macOS arm64 (Apple Silicon)
 - Windows x86_64
 
-On other platforms `pip install` will build from source, which requires [Zig 0.15.2+](https://ziglang.org/download/) to be installed.
+On other platforms `pip install` will build from source, which requires [Zig 0.16.0](https://ziglang.org/download/) to be installed.
 
 ## Quickstart
 ```python
@@ -69,7 +69,7 @@ See [`examples/`](https://github.com/dmitryglhf/edda/tree/main/examples) for mor
 
 ## Development
 
-Requires [Zig 0.15.2+](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), and [just](https://github.com/casey/just).
+Requires [Zig 0.16.0](https://ziglang.org/download/), [uv](https://docs.astral.sh/uv/), and [just](https://github.com/casey/just).
 
 ### Setup
 ```bash
