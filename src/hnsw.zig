@@ -12,6 +12,18 @@ const MAX_LEVEL: u8 = 16;
 
 const NodeIdx = u32;
 
+/// A node paired with its closeness to the query (higher = closer).
+/// Used as the element type in the search heaps.
+const Candidate = struct {
+    idx: NodeIdx,
+    score: f32,
+};
+
+/// Tracks which nodes a single searchLayer call has already expanded.
+/// Start simple with a hash set; can be swapped for an epoch-stamped
+/// array later if it shows up in profiling.
+const Visited = std.AutoHashMapUnmanaged(NodeIdx, void);
+
 const Node = struct {
     id: i64,
     level: u8,
@@ -57,7 +69,9 @@ pub const IndexHnsw = struct {
         opts: Options,
     ) IndexHnsw {
         return .{
+            .m = opts.m,
             .m_max0 = 2 * opts.m,
+            .ef_construction = opts.ef_construction,
             .ml = 1.0 / @log(@as(f32, @floatFromInt(opts.m))),
             .nodes = .empty,
             .vectors = .empty,
@@ -108,17 +122,55 @@ pub const IndexHnsw = struct {
     }
 
     fn randomLevel(self: *IndexHnsw) u8 {
-        // TODO:
-        //  - u = self.rng.random().float(f32) BUT (0,1], not [0,1)
-        //    var: u = 1.0 - self.rng.random().float(f32), to exclude 0
-        //  - l_f = -@log(u) * self.ml
-        //  - l = @as(u8, @intFromFloat(@floor(l_f)))
-        //  - @min(l, MAX_LEVEL - 1)
+        const u = 1.0 - self.rng.random().float(f32);
+        const l_f = @floor(-@log(u) * self.ml);
+        const lim = @min(l_f, @as(f32, MAX_LEVEL - 1));
+
+        return @intFromFloat(lim);
+    }
+
+    /// Unifies similarity
+    fn closeness(self: *const IndexHnsw, a: []const f32, b: []const f32) f32 {
+        const s = metrics.similarity(self.metric, a, b);
+        return switch (self.metric) {
+            .cosine, .dot => s,
+            .euclid, .manhattan => -s,
+        };
+    }
+
+    /// Store a new point WITHOUT linking it into the graph.
+    fn appendNode(self: *IndexHnsw, id: i64, vector: []const f32, level: u8) !NodeIdx {
         _ = self;
-        return 0;
+        _ = id;
+        _ = vector;
+        _ = level;
+        @panic("TODO: appendNode");
+    }
+
+    pub fn search(self: *IndexHnsw, query: []const f32, k: usize) ![]types.SearchResult {
+        _ = self;
+        _ = query;
+        _ = k;
+        @panic("TODO: search");
     }
 };
 
 test "init and deinit" {
     // TODO
+}
+
+test "randomLevel distribution" {
+    var index = IndexHnsw.init(std.testing.allocator, 4, .cosine, .{});
+    defer index.deinit();
+
+    var counts = [_]usize{0} ** MAX_LEVEL;
+    for (0..100_000) |_| {
+        counts[index.randomLevel()] += 1;
+    }
+
+    // Level 0 should dominate (~ 1 - 1/16 = 93.75% at m=16)
+    try std.testing.expect(counts[0] > 90_000);
+    // And each higher level should be rarer than the one below it
+    try std.testing.expect(counts[0] > counts[1]);
+    try std.testing.expect(counts[1] > counts[2]);
 }
